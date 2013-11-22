@@ -792,7 +792,7 @@ cc.WebAudioEngine = cc.AudioEngine.extend(/** @lends cc.WebAudioEngine# */{
         sfxCache.sourceNode = this._ctx.createBufferSource();
         sfxCache.sourceNode.buffer = this._audioData[key];
         sfxCache.sourceNode.loop = loop;
-        sfxCache.volumeNode = this._ctx.createGainNode();
+        sfxCache.volumeNode = this._ctx.createGain();
         sfxCache.volumeNode.gain.value = volume;
 
         sfxCache.sourceNode.connect(sfxCache.volumeNode);
