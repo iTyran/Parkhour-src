@@ -35,7 +35,6 @@ var HelloWorldScene = cc.Scene.extend({
     onEnter:function () {
         this._super();
         var layer = new HelloLayer();
-        layer.init();
         this.addChild(layer);
     }
 });
