@@ -1,0 +1,855 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/****************************************************************************
+<span class='line'>  2</span>  Copyright (c) 2010-2012 cocos2d-x.org
+<span class='line'>  3</span>  Copyright (c) 2008-2010 Ricardo Quesada
+<span class='line'>  4</span>  Copyright 2011 Jeff Lamarche
+<span class='line'>  5</span>  Copyright 2012 Goffredo Marocchi
+<span class='line'>  6</span>  Copyright (c) 2011      Zynga Inc.
+<span class='line'>  7</span> 
+<span class='line'>  8</span>  http://www.cocos2d-x.org
+<span class='line'>  9</span> 
+<span class='line'> 10</span>  Permission is hereby granted, free of charge, to any person obtaining a copy
+<span class='line'> 11</span>  of this software and associated documentation files (the "Software"), to deal
+<span class='line'> 12</span>  in the Software without restriction, including without limitation the rights
+<span class='line'> 13</span>  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+<span class='line'> 14</span>  copies of the Software, and to permit persons to whom the Software is
+<span class='line'> 15</span>  furnished to do so, subject to the following conditions:
+<span class='line'> 16</span> 
+<span class='line'> 17</span>  The above copyright notice and this permission notice shall be included in
+<span class='line'> 18</span>  all copies or substantial portions of the Software.
+<span class='line'> 19</span> 
+<span class='line'> 20</span>  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+<span class='line'> 21</span>  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+<span class='line'> 22</span>  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+<span class='line'> 23</span>  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+<span class='line'> 24</span>  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+<span class='line'> 25</span>  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+<span class='line'> 26</span>  THE SOFTWARE.
+<span class='line'> 27</span>  ****************************************************************************/</span><span class="WHIT">
+<span class='line'> 28</span> 
+<span class='line'> 29</span> </span><span class="COMM">//-------------Vertex Attributes-----------</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="COMM">/**
+<span class='line'> 31</span>  * @constant
+<span class='line'> 32</span>  * @type {Number}
+<span class='line'> 33</span>  */</span><span class="WHIT">
+<span class='line'> 34</span> </span><span class="NAME">cc.VERTEX_ATTRIB_POSITION</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 35</span> </span><span class="COMM">/**
+<span class='line'> 36</span>  * @constant
+<span class='line'> 37</span>  * @type {Number}
+<span class='line'> 38</span>  */</span><span class="WHIT">
+<span class='line'> 39</span> </span><span class="NAME">cc.VERTEX_ATTRIB_COLOR</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 40</span> </span><span class="COMM">/**
+<span class='line'> 41</span>  * @constant
+<span class='line'> 42</span>  * @type {Number}
+<span class='line'> 43</span>  */</span><span class="WHIT">
+<span class='line'> 44</span> </span><span class="NAME">cc.VERTEX_ATTRIB_TEX_COORDS</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 45</span> </span><span class="COMM">/**
+<span class='line'> 46</span>  * @constant
+<span class='line'> 47</span>  * @type {Number}
+<span class='line'> 48</span>  */</span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="NAME">cc.VERTEX_ATTRIB_MAX</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">3</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 50</span> 
+<span class='line'> 51</span> </span><span class="COMM">//------------Uniforms------------------</span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="COMM">/**
+<span class='line'> 53</span>  * @constant
+<span class='line'> 54</span>  * @type {Number}
+<span class='line'> 55</span>  */</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="NAME">cc.UNIFORM_PMATRIX</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="COMM">/**
+<span class='line'> 58</span>  * @constant
+<span class='line'> 59</span>  * @type {Number}
+<span class='line'> 60</span>  */</span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="NAME">cc.UNIFORM_MVMATRIX</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="COMM">/**
+<span class='line'> 63</span>  * @constant
+<span class='line'> 64</span>  * @type {Number}
+<span class='line'> 65</span>  */</span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="NAME">cc.UNIFORM_MVPMATRIX</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="COMM">/**
+<span class='line'> 68</span>  * @constant
+<span class='line'> 69</span>  * @type {Number}
+<span class='line'> 70</span>  */</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="NAME">cc.UNIFORM_TIME</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">3</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="COMM">/**
+<span class='line'> 73</span>  * @constant
+<span class='line'> 74</span>  * @type {Number}
+<span class='line'> 75</span>  */</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="NAME">cc.UNIFORM_SINTIME</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">4</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 77</span> </span><span class="COMM">/**
+<span class='line'> 78</span>  * @constant
+<span class='line'> 79</span>  * @type {Number}
+<span class='line'> 80</span>  */</span><span class="WHIT">
+<span class='line'> 81</span> </span><span class="NAME">cc.UNIFORM_COSTIME</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">5</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="COMM">/**
+<span class='line'> 83</span>  * @constant
+<span class='line'> 84</span>  * @type {Number}
+<span class='line'> 85</span>  */</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="NAME">cc.UNIFORM_RANDOM01</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">6</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="COMM">/**
+<span class='line'> 88</span>  * @constant
+<span class='line'> 89</span>  * @type {Number}
+<span class='line'> 90</span>  */</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="NAME">cc.UNIFORM_SAMPLER</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">7</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="COMM">/**
+<span class='line'> 93</span>  * @constant
+<span class='line'> 94</span>  * @type {Number}
+<span class='line'> 95</span>  */</span><span class="WHIT">
+<span class='line'> 96</span> </span><span class="NAME">cc.UNIFORM_MAX</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">8</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 97</span> 
+<span class='line'> 98</span> </span><span class="COMM">//------------Shader Name---------------</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="COMM">/**
+<span class='line'>100</span>  * @constant
+<span class='line'>101</span>  * @type {String}
+<span class='line'>102</span>  */</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="NAME">cc.SHADER_POSITION_TEXTURECOLOR</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"ShaderPositionTextureColor"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="COMM">/**
+<span class='line'>105</span>  * @constant
+<span class='line'>106</span>  * @type {String}
+<span class='line'>107</span>  */</span><span class="WHIT">
+<span class='line'>108</span> </span><span class="NAME">cc.SHADER_POSITION_TEXTURECOLORALPHATEST</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"ShaderPositionTextureColorAlphaTest"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>109</span> </span><span class="COMM">/**
+<span class='line'>110</span>  * @constant
+<span class='line'>111</span>  * @type {String}
+<span class='line'>112</span>  */</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="NAME">cc.SHADER_POSITION_COLOR</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"ShaderPositionColor"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="COMM">/**
+<span class='line'>115</span>  * @constant
+<span class='line'>116</span>  * @type {String}
+<span class='line'>117</span>  */</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="NAME">cc.SHADER_POSITION_TEXTURE</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"ShaderPositionTexture"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="COMM">/**
+<span class='line'>120</span>  * @constant
+<span class='line'>121</span>  * @type {String}
+<span class='line'>122</span>  */</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="NAME">cc.SHADER_POSITION_TEXTURE_UCOLOR</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"ShaderPositionTexture_uColor"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="COMM">/**
+<span class='line'>125</span>  * @constant
+<span class='line'>126</span>  * @type {String}
+<span class='line'>127</span>  */</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="NAME">cc.SHADER_POSITION_TEXTUREA8COLOR</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"ShaderPositionTextureA8Color"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="COMM">/**
+<span class='line'>130</span>  * @constant
+<span class='line'>131</span>  * @type {String}
+<span class='line'>132</span>  */</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="NAME">cc.SHADER_POSITION_UCOLOR</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"ShaderPosition_uColor"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="COMM">/**
+<span class='line'>135</span>  * @constant
+<span class='line'>136</span>  * @type {String}
+<span class='line'>137</span>  */</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="NAME">cc.SHADER_POSITION_LENGTHTEXTURECOLOR</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"ShaderPositionLengthTextureColor"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>139</span> 
+<span class='line'>140</span> </span><span class="COMM">//------------uniform names----------------</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="COMM">/**
+<span class='line'>142</span>  * @constant
+<span class='line'>143</span>  * @type {String}
+<span class='line'>144</span>  */</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="NAME">cc.UNIFORM_PMATRIX_S</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"CC_PMatrix"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>146</span> </span><span class="COMM">/**
+<span class='line'>147</span>  * @constant
+<span class='line'>148</span>  * @type {String}
+<span class='line'>149</span>  */</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="NAME">cc.UNIFORM_MVMATRIX_S</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"CC_MVMatrix"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="COMM">/**
+<span class='line'>152</span>  * @constant
+<span class='line'>153</span>  * @type {String}
+<span class='line'>154</span>  */</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="NAME">cc.UNIFORM_MVPMATRIX_S</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"CC_MVPMatrix"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="COMM">/**
+<span class='line'>157</span>  * @constant
+<span class='line'>158</span>  * @type {String}
+<span class='line'>159</span>  */</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="NAME">cc.UNIFORM_TIME_S</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"CC_Time"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="COMM">/**
+<span class='line'>162</span>  * @constant
+<span class='line'>163</span>  * @type {String}
+<span class='line'>164</span>  */</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="NAME">cc.UNIFORM_SINTIME_S</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"CC_SinTime"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="COMM">/**
+<span class='line'>167</span>  * @constant
+<span class='line'>168</span>  * @type {String}
+<span class='line'>169</span>  */</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="NAME">cc.UNIFORM_COSTIME_S</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"CC_CosTime"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>171</span> </span><span class="COMM">/**
+<span class='line'>172</span>  * @constant
+<span class='line'>173</span>  * @type {String}
+<span class='line'>174</span>  */</span><span class="WHIT">
+<span class='line'>175</span> </span><span class="NAME">cc.UNIFORM_RANDOM01_S</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"CC_Random01"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>176</span> </span><span class="COMM">/**
+<span class='line'>177</span>  * @constant
+<span class='line'>178</span>  * @type {String}
+<span class='line'>179</span>  */</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="NAME">cc.UNIFORM_SAMPLER_S</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"CC_Texture0"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="COMM">/**
+<span class='line'>182</span>  * @constant
+<span class='line'>183</span>  * @type {String}
+<span class='line'>184</span>  */</span><span class="WHIT">
+<span class='line'>185</span> </span><span class="NAME">cc.UNIFORM_ALPHA_TEST_VALUE_S</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"CC_alpha_value"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>186</span> 
+<span class='line'>187</span> </span><span class="COMM">//------------Attribute names--------------</span><span class="WHIT">
+<span class='line'>188</span> </span><span class="COMM">/**
+<span class='line'>189</span>  * @constant
+<span class='line'>190</span>  * @type {String}
+<span class='line'>191</span>  */</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="NAME">cc.ATTRIBUTE_NAME_COLOR</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"a_color"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="COMM">/**
+<span class='line'>194</span>  * @constant
+<span class='line'>195</span>  * @type {String}
+<span class='line'>196</span>  */</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="NAME">cc.ATTRIBUTE_NAME_POSITION</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"a_position"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="COMM">/**
+<span class='line'>199</span>  * @constant
+<span class='line'>200</span>  * @type {String}
+<span class='line'>201</span>  */</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="NAME">cc.ATTRIBUTE_NAME_TEX_COORD</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"a_texCoord"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>203</span> 
+<span class='line'>204</span> </span><span class="NAME">cc.HashUniformEntry</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">value</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">hh</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>205</span> </span><span class="WHIT">    </span><span class="NAME">this.value</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>206</span> </span><span class="WHIT">    </span><span class="NAME">this.location</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">location</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>207</span> </span><span class="WHIT">    </span><span class="NAME">this.hh</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">hh</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>208</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>209</span> 
+<span class='line'>210</span> </span><span class="COMM">/**
+<span class='line'>211</span>  * Class that implements a glProgram
+<span class='line'>212</span>  * @class
+<span class='line'>213</span>  * @extends cc.Class
+<span class='line'>214</span>  */</span><span class="WHIT">
+<span class='line'>215</span> </span><span class="NAME">cc.GLProgram</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cc.Class.extend</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>216</span> </span><span class="WHIT">    </span><span class="NAME">_glContext</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>217</span> </span><span class="WHIT">    </span><span class="NAME">_programObj</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>218</span> </span><span class="WHIT">    </span><span class="NAME">_vertShader</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>219</span> </span><span class="WHIT">    </span><span class="NAME">_fragShader</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>220</span> </span><span class="WHIT">    </span><span class="NAME">_uniforms</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>221</span> </span><span class="WHIT">    </span><span class="NAME">_hashForUniforms</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">    </span><span class="NAME">_usesTime</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>223</span> 
+<span class='line'>224</span> </span><span class="WHIT">    </span><span class="COMM">// Uniform cache</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">    </span><span class="NAME">_updateUniformLocation</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">bytes</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>226</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>227</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>228</span> 
+<span class='line'>229</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>230</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">element</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>231</span> </span><span class="WHIT">        </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">this._hashForUniforms.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>232</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._hashForUniforms</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">location</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">location</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>233</span> </span><span class="WHIT">                </span><span class="NAME">element</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._hashForUniforms</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>234</span> 
+<span class='line'>235</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">element</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>236</span> </span><span class="WHIT">            </span><span class="NAME">element</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">cc.HashUniformEntry</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>237</span> </span><span class="WHIT">            </span><span class="COMM">// key</span><span class="WHIT">
+<span class='line'>238</span> </span><span class="WHIT">            </span><span class="NAME">element.location</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">location</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>239</span> </span><span class="WHIT">            </span><span class="COMM">// value</span><span class="WHIT">
+<span class='line'>240</span> </span><span class="WHIT">            </span><span class="NAME">element.value</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>241</span> </span><span class="WHIT">            </span><span class="NAME">this._hashForUniforms.push</span><span class="PUNC">(</span><span class="NAME">element</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>242</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>243</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">element.value</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>244</span> </span><span class="WHIT">                </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>245</span> </span><span class="WHIT">            </span><span class="KEYW">else</span><span class="WHIT">
+<span class='line'>246</span> </span><span class="WHIT">                </span><span class="NAME">element.value</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>247</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>248</span> 
+<span class='line'>249</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>250</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>251</span> 
+<span class='line'>252</span> </span><span class="WHIT">    </span><span class="NAME">_description</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>253</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">"&lt;CCGLProgram = "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">" | Program = "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._programObj.toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">", VertexShader = "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>254</span> </span><span class="WHIT">            </span><span class="NAME">this._vertShader.toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">", FragmentShader = "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._fragShader.toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">">"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>255</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>256</span> 
+<span class='line'>257</span> </span><span class="WHIT">    </span><span class="NAME">_compileShader</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">shader</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">type</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">source</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>258</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">source</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">shader</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>259</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>260</span> 
+<span class='line'>261</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">preStr</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">type</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">this._glContext.VERTEX_SHADER</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="STRN">"precision highp float;\n"</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"precision mediump float;\n"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>262</span> 
+<span class='line'>263</span> </span><span class="WHIT">        </span><span class="NAME">source</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">preStr</span><span class="WHIT">
+<span class='line'>264</span> </span><span class="WHIT">            </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"uniform mat4 CC_PMatrix;         \n"</span><span class="WHIT">
+<span class='line'>265</span> </span><span class="WHIT">            </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"uniform mat4 CC_MVMatrix;        \n"</span><span class="WHIT">
+<span class='line'>266</span> </span><span class="WHIT">            </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"uniform mat4 CC_MVPMatrix;       \n"</span><span class="WHIT">
+<span class='line'>267</span> </span><span class="WHIT">            </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"uniform vec4 CC_Time;            \n"</span><span class="WHIT">
+<span class='line'>268</span> </span><span class="WHIT">            </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"uniform vec4 CC_SinTime;         \n"</span><span class="WHIT">
+<span class='line'>269</span> </span><span class="WHIT">            </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"uniform vec4 CC_CosTime;         \n"</span><span class="WHIT">
+<span class='line'>270</span> </span><span class="WHIT">            </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"uniform vec4 CC_Random01;        \n"</span><span class="WHIT">
+<span class='line'>271</span> </span><span class="WHIT">            </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"//CC INCLUDES END                \n  \n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">source</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>272</span> 
+<span class='line'>273</span> </span><span class="WHIT">        </span><span class="NAME">this._glContext.shaderSource</span><span class="PUNC">(</span><span class="NAME">shader</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">source</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>274</span> </span><span class="WHIT">        </span><span class="NAME">this._glContext.compileShader</span><span class="PUNC">(</span><span class="NAME">shader</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>275</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.getShaderParameter</span><span class="PUNC">(</span><span class="NAME">shader</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this._glContext.COMPILE_STATUS</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>276</span> 
+<span class='line'>277</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">status</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>278</span> </span><span class="WHIT">            </span><span class="NAME">cc.log</span><span class="PUNC">(</span><span class="STRN">"cocos2d: ERROR: Failed to compile shader:\n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._glContext.getShaderSource</span><span class="PUNC">(</span><span class="NAME">shader</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>279</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">type</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">this._glContext.VERTEX_SHADER</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>280</span> </span><span class="WHIT">                </span><span class="NAME">cc.log</span><span class="PUNC">(</span><span class="STRN">"cocos2d: \n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.vertexShaderLog</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>281</span> </span><span class="WHIT">            </span><span class="KEYW">else</span><span class="WHIT">
+<span class='line'>282</span> </span><span class="WHIT">                </span><span class="NAME">cc.log</span><span class="PUNC">(</span><span class="STRN">"cocos2d: \n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.fragmentShaderLog</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>283</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>284</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">status</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>285</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>286</span> 
+<span class='line'>287</span> </span><span class="WHIT">    </span><span class="NAME">ctor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">glContext</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>288</span> </span><span class="WHIT">        </span><span class="NAME">this._programObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>289</span> </span><span class="WHIT">        </span><span class="NAME">this._vertShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>290</span> </span><span class="WHIT">        </span><span class="NAME">this._fragShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>291</span> </span><span class="WHIT">        </span><span class="NAME">this._uniforms</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>292</span> </span><span class="WHIT">        </span><span class="NAME">this._hashForUniforms</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>293</span> </span><span class="WHIT">        </span><span class="NAME">this._glContext</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">glContext</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">cc.renderContext</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>294</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>295</span> 
+<span class='line'>296</span> </span><span class="WHIT">    </span><span class="NAME">destroyProgram</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>297</span> </span><span class="WHIT">        </span><span class="NAME">this._vertShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>298</span> </span><span class="WHIT">        </span><span class="NAME">this._fragShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>299</span> </span><span class="WHIT">        </span><span class="NAME">this._uniforms</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>300</span> </span><span class="WHIT">        </span><span class="NAME">this._hashForUniforms</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>301</span> 
+<span class='line'>302</span> </span><span class="WHIT">        </span><span class="NAME">this._glContext.deleteProgram</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>303</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>304</span> 
+<span class='line'>305</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>306</span>      * Initializes the cc.GLProgram with a vertex and fragment with string
+<span class='line'>307</span>      * @param {String} vertShaderStr
+<span class='line'>308</span>      * @param {String} fragShaderStr
+<span class='line'>309</span>      * @return {Boolean}
+<span class='line'>310</span>      */</span><span class="WHIT">
+<span class='line'>311</span> </span><span class="WHIT">    </span><span class="NAME">initWithVertexShaderByteArray</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">vertShaderStr</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fragShaderStr</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>312</span> </span><span class="WHIT">        </span><span class="NAME">this._programObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cc.renderContext.createProgram</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>313</span> </span><span class="WHIT">        </span><span class="COMM">//cc.CHECK_GL_ERROR_DEBUG();</span><span class="WHIT">
+<span class='line'>314</span> 
+<span class='line'>315</span> </span><span class="WHIT">        </span><span class="NAME">this._vertShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>316</span> </span><span class="WHIT">        </span><span class="NAME">this._fragShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>317</span> 
+<span class='line'>318</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">vertShaderStr</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>319</span> </span><span class="WHIT">            </span><span class="NAME">this._vertShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.createShader</span><span class="PUNC">(</span><span class="NAME">this._glContext.VERTEX_SHADER</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>320</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this._compileShader</span><span class="PUNC">(</span><span class="NAME">this._vertShader</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this._glContext.VERTEX_SHADER</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">vertShaderStr</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>321</span> </span><span class="WHIT">                </span><span class="NAME">cc.log</span><span class="PUNC">(</span><span class="STRN">"cocos2d: ERROR: Failed to compile vertex shader"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>322</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>323</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>324</span> 
+<span class='line'>325</span> </span><span class="WHIT">        </span><span class="COMM">// Create and compile fragment shader</span><span class="WHIT">
+<span class='line'>326</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">fragShaderStr</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>327</span> </span><span class="WHIT">            </span><span class="NAME">this._fragShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.createShader</span><span class="PUNC">(</span><span class="NAME">this._glContext.FRAGMENT_SHADER</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>328</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this._compileShader</span><span class="PUNC">(</span><span class="NAME">this._fragShader</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this._glContext.FRAGMENT_SHADER</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fragShaderStr</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>329</span> </span><span class="WHIT">                </span><span class="NAME">cc.log</span><span class="PUNC">(</span><span class="STRN">"cocos2d: ERROR: Failed to compile fragment shader"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>330</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>331</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>332</span> 
+<span class='line'>333</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._vertShader</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>334</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.attachShader</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this._vertShader</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>335</span> </span><span class="WHIT">        </span><span class="NAME">cc.CHECK_GL_ERROR_DEBUG</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>336</span> 
+<span class='line'>337</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._fragShader</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>338</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.attachShader</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this._fragShader</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>339</span> </span><span class="WHIT">        </span><span class="NAME">this._hashForUniforms</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>340</span> 
+<span class='line'>341</span> </span><span class="WHIT">        </span><span class="NAME">cc.CHECK_GL_ERROR_DEBUG</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>342</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>343</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>344</span> 
+<span class='line'>345</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>346</span>      * Initializes the cc.GLProgram with a vertex and fragment with string
+<span class='line'>347</span>      * @param {String} vertShaderStr
+<span class='line'>348</span>      * @param {String} fragShaderStr
+<span class='line'>349</span>      * @return {Boolean}
+<span class='line'>350</span>      */</span><span class="WHIT">
+<span class='line'>351</span> </span><span class="WHIT">    </span><span class="NAME">initWithString</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">vertShaderStr</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fragShaderStr</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>352</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.initWithVertexShaderByteArray</span><span class="PUNC">(</span><span class="NAME">vertShaderStr</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fragShaderStr</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>353</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>354</span> 
+<span class='line'>355</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>356</span>      * Initializes the CCGLProgram with a vertex and fragment with contents of filenames
+<span class='line'>357</span>      * @param {String} vShaderFilename
+<span class='line'>358</span>      * @param {String} fShaderFileName
+<span class='line'>359</span>      * @return {Boolean}
+<span class='line'>360</span>      */</span><span class="WHIT">
+<span class='line'>361</span> </span><span class="WHIT">    </span><span class="NAME">initWithVertexShaderFilename</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">vShaderFilename</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fShaderFileName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>362</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">fileUtils</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cc.FileUtils.getInstance</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>363</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">vertexSource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fileUtils.getTextFileData</span><span class="PUNC">(</span><span class="NAME">fileUtils.fullPathForFilename</span><span class="PUNC">(</span><span class="NAME">vShaderFilename</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>364</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">fragmentSource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fileUtils.getTextFileData</span><span class="PUNC">(</span><span class="NAME">fileUtils.fullPathForFilename</span><span class="PUNC">(</span><span class="NAME">fShaderFileName</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>365</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.initWithVertexShaderByteArray</span><span class="PUNC">(</span><span class="NAME">vertexSource</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fragmentSource</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>366</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>367</span> 
+<span class='line'>368</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>369</span>      * Initializes the CCGLProgram with a vertex and fragment with contents of filenames
+<span class='line'>370</span>      * @param {String} vShaderFilename
+<span class='line'>371</span>      * @param {String} fShaderFileName
+<span class='line'>372</span>      * @return {Boolean}
+<span class='line'>373</span>      */</span><span class="WHIT">
+<span class='line'>374</span> </span><span class="WHIT">    </span><span class="NAME">init</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">vShaderFilename</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fShaderFileName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>375</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.initWithVertexShaderFilename</span><span class="PUNC">(</span><span class="NAME">vShaderFilename</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fShaderFileName</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>376</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>377</span> 
+<span class='line'>378</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>379</span>      * It will add a new attribute to the shader
+<span class='line'>380</span>      * @param {String} attributeName
+<span class='line'>381</span>      * @param {Number} index
+<span class='line'>382</span>      */</span><span class="WHIT">
+<span class='line'>383</span> </span><span class="WHIT">    </span><span class="NAME">addAttribute</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">attributeName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">index</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>384</span> </span><span class="WHIT">        </span><span class="NAME">this._glContext.bindAttribLocation</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">index</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">attributeName</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>385</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>386</span> 
+<span class='line'>387</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>388</span>      * links the glProgram
+<span class='line'>389</span>      * @return {Boolean}
+<span class='line'>390</span>      */</span><span class="WHIT">
+<span class='line'>391</span> </span><span class="WHIT">    </span><span class="NAME">link</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>392</span> </span><span class="WHIT">        </span><span class="NAME">cc.Assert</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"Cannot link invalid program"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>393</span> 
+<span class='line'>394</span> </span><span class="WHIT">        </span><span class="NAME">this._glContext.linkProgram</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>395</span> 
+<span class='line'>396</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._vertShader</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>397</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.deleteShader</span><span class="PUNC">(</span><span class="NAME">this._vertShader</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>398</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._fragShader</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>399</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.deleteShader</span><span class="PUNC">(</span><span class="NAME">this._fragShader</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>400</span> 
+<span class='line'>401</span> </span><span class="WHIT">        </span><span class="NAME">this._vertShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>402</span> </span><span class="WHIT">        </span><span class="NAME">this._fragShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>403</span> 
+<span class='line'>404</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">cc.COCOS2D_DEBUG</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>405</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.getProgramParameter</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this._glContext.LINK_STATUS</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>406</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">status</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>407</span> </span><span class="WHIT">                </span><span class="NAME">cc.log</span><span class="PUNC">(</span><span class="STRN">"cocos2d: ERROR: Failed to link program: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this._programObj</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>408</span> </span><span class="WHIT">                </span><span class="NAME">cc.glDeleteProgram</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>409</span> </span><span class="WHIT">                </span><span class="NAME">this._programObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>410</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>411</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>412</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>413</span> 
+<span class='line'>414</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>415</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>416</span> 
+<span class='line'>417</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>418</span>      * it will call glUseProgram()
+<span class='line'>419</span>      */</span><span class="WHIT">
+<span class='line'>420</span> </span><span class="WHIT">    </span><span class="NAME">use</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>421</span> </span><span class="WHIT">        </span><span class="NAME">cc.glUseProgram</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>422</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>423</span> 
+<span class='line'>424</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>425</span>      * It will create 4 uniforms:
+<span class='line'>426</span>      *  cc.UNIFORM_PMATRIX
+<span class='line'>427</span>      *  cc.UNIFORM_MVMATRIX
+<span class='line'>428</span>      *  cc.UNIFORM_MVPMATRIX
+<span class='line'>429</span>      *  cc.UNIFORM_SAMPLER
+<span class='line'>430</span>      */</span><span class="WHIT">
+<span class='line'>431</span> </span><span class="WHIT">    </span><span class="NAME">updateUniforms</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>432</span> </span><span class="WHIT">        </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_PMATRIX</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.getUniformLocation</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.UNIFORM_PMATRIX_S</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>433</span> </span><span class="WHIT">        </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_MVMATRIX</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.getUniformLocation</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.UNIFORM_MVMATRIX_S</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>434</span> </span><span class="WHIT">        </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_MVPMATRIX</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.getUniformLocation</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.UNIFORM_MVPMATRIX_S</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>435</span> </span><span class="WHIT">        </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_TIME</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.getUniformLocation</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.UNIFORM_TIME_S</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>436</span> </span><span class="WHIT">        </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_SINTIME</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.getUniformLocation</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.UNIFORM_SINTIME_S</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>437</span> </span><span class="WHIT">        </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_COSTIME</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.getUniformLocation</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.UNIFORM_COSTIME_S</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>438</span> 
+<span class='line'>439</span> </span><span class="WHIT">        </span><span class="NAME">this._usesTime</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_TIME</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_SINTIME</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_COSTIME</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>440</span> 
+<span class='line'>441</span> </span><span class="WHIT">        </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_RANDOM01</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.getUniformLocation</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.UNIFORM_RANDOM01_S</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>442</span> </span><span class="WHIT">        </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_SAMPLER</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._glContext.getUniformLocation</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.UNIFORM_SAMPLER_S</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>443</span> 
+<span class='line'>444</span> </span><span class="WHIT">        </span><span class="NAME">this.use</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>445</span> </span><span class="WHIT">        </span><span class="COMM">// Since sample most probably won't change, set it to 0 now.</span><span class="WHIT">
+<span class='line'>446</span> </span><span class="WHIT">        </span><span class="NAME">this.setUniformLocationWith1i</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_SAMPLER</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>447</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>448</span> 
+<span class='line'>449</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>450</span>      * calls retrieves the named uniform location for this shader program.
+<span class='line'>451</span>      * @param {String} name
+<span class='line'>452</span>      * @returns {Number}
+<span class='line'>453</span>      */</span><span class="WHIT">
+<span class='line'>454</span> </span><span class="WHIT">    </span><span class="NAME">getUniformLocationForName</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>455</span> </span><span class="WHIT">        </span><span class="NAME">cc.Assert</span><span class="PUNC">(</span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"Invalid uniform name"</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>456</span> </span><span class="WHIT">        </span><span class="NAME">cc.Assert</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"Invalid operation. Cannot get uniform location when program is not initialized"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>457</span> 
+<span class='line'>458</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._glContext.getUniformLocation</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>459</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>460</span> 
+<span class='line'>461</span> </span><span class="WHIT">    </span><span class="NAME">getUniformMVPMatrix</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>462</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_MVPMATRIX</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>463</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>464</span> 
+<span class='line'>465</span> </span><span class="WHIT">    </span><span class="NAME">getUniformSampler</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>466</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_SAMPLER</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>467</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>468</span> 
+<span class='line'>469</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>470</span>      * calls glUniform1i only if the values are different than the previous call for this same shader program.
+<span class='line'>471</span>      * @param {WebGLUniformLocation} location
+<span class='line'>472</span>      * @param {Number} i1
+<span class='line'>473</span>      */</span><span class="WHIT">
+<span class='line'>474</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith1i</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i1</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>475</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>476</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">updated</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>477</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform1i</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>478</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>479</span> 
+<span class='line'>480</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>481</span>      * calls glUniform2i only if the values are different than the previous call for this same shader program.
+<span class='line'>482</span>      * @param {WebGLUniformLocation} location
+<span class='line'>483</span>      * @param {Number} i1
+<span class='line'>484</span>      * @param {Number} i2
+<span class='line'>485</span>      */</span><span class="WHIT">
+<span class='line'>486</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith2i</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i1</span><span class="PUNC">,</span><span class="NAME">i2</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>487</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="NAME">i1</span><span class="PUNC">,</span><span class="NAME">i2</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>488</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">  </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>489</span> 
+<span class='line'>490</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>491</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform2i</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i2</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>492</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>493</span> 
+<span class='line'>494</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>495</span>      * calls glUniform3i only if the values are different than the previous call for this same shader program.
+<span class='line'>496</span>      * @param {WebGLUniformLocation} location
+<span class='line'>497</span>      * @param {Number} i1
+<span class='line'>498</span>      * @param {Number} i2
+<span class='line'>499</span>      * @param {Number} i3
+<span class='line'>500</span>      */</span><span class="WHIT">
+<span class='line'>501</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith3i</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i3</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>502</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="NAME">i1</span><span class="PUNC">,</span><span class="NAME">i2</span><span class="PUNC">,</span><span class="NAME">i3</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>503</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">  </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>504</span> 
+<span class='line'>505</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>506</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform3i</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i3</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>507</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>508</span> 
+<span class='line'>509</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>510</span>      * calls glUniform4i only if the values are different than the previous call for this same shader program.
+<span class='line'>511</span>      * @param {WebGLUniformLocation} location
+<span class='line'>512</span>      * @param {Number} i1
+<span class='line'>513</span>      * @param {Number} i2
+<span class='line'>514</span>      * @param {Number} i3
+<span class='line'>515</span>      * @param {Number} i4
+<span class='line'>516</span>      */</span><span class="WHIT">
+<span class='line'>517</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith4i</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i3</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i4</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>518</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="NAME">i1</span><span class="PUNC">,</span><span class="NAME">i2</span><span class="PUNC">,</span><span class="NAME">i3</span><span class="PUNC">,</span><span class="NAME">i4</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>519</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">  </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>520</span> 
+<span class='line'>521</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>522</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform4i</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i3</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i4</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>523</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>524</span> 
+<span class='line'>525</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>526</span>      * calls glUniform2iv only if the values are different than the previous call for this same shader program.
+<span class='line'>527</span>      * @param {WebGLUniformLocation} location
+<span class='line'>528</span>      * @param {Int32Array} intArray
+<span class='line'>529</span>      * @param {Number} numberOfArrays
+<span class='line'>530</span>      */</span><span class="WHIT">
+<span class='line'>531</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith2iv</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">numberOfArrays</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>532</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">  </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>533</span> 
+<span class='line'>534</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>535</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform2iv</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>536</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>537</span> 
+<span class='line'>538</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>539</span>      * calls glUniform3iv only if the values are different than the previous call for this same shader program.
+<span class='line'>540</span>      * @param {WebGLUniformLocation} location
+<span class='line'>541</span>      * @param {Int32Array} intArray
+<span class='line'>542</span>      * @param {Number} numberOfArrays
+<span class='line'>543</span>      */</span><span class="WHIT">
+<span class='line'>544</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith3iv</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">numberOfArrays</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>545</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">  </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>546</span> 
+<span class='line'>547</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>548</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform3iv</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>549</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>550</span> 
+<span class='line'>551</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>552</span>      * calls glUniform4iv only if the values are different than the previous call for this same shader program.
+<span class='line'>553</span>      * @param {WebGLUniformLocation} location
+<span class='line'>554</span>      * @param {Int32Array} intArray
+<span class='line'>555</span>      * @param {Number} numberOfArrays
+<span class='line'>556</span>      */</span><span class="WHIT">
+<span class='line'>557</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith4iv</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">numberOfArrays</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>558</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">  </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>559</span> 
+<span class='line'>560</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>561</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform4iv</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">intArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>562</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>563</span> 
+<span class='line'>564</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>565</span>      * calls glUniform1i only if the values are different than the previous call for this same shader program.
+<span class='line'>566</span>      * @param {WebGLUniformLocation} location
+<span class='line'>567</span>      * @param {Number} i1
+<span class='line'>568</span>      */</span><span class="WHIT">
+<span class='line'>569</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationI32</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i1</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>570</span> </span><span class="WHIT">        </span><span class="NAME">this.setUniformLocationWith1i</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>571</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>572</span> 
+<span class='line'>573</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>574</span>      * calls glUniform1f only if the values are different than the previous call for this same shader program.
+<span class='line'>575</span>      * @param {WebGLUniformLocation} location
+<span class='line'>576</span>      * @param {Number} f1
+<span class='line'>577</span>      */</span><span class="WHIT">
+<span class='line'>578</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith1f</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f1</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>579</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>580</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">updated</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>581</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform1f</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>582</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>583</span> 
+<span class='line'>584</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>585</span>      * calls glUniform2f only if the values are different than the previous call for this same shader program.
+<span class='line'>586</span>      * @param {WebGLUniformLocation} location
+<span class='line'>587</span>      * @param {Number} f1
+<span class='line'>588</span>      * @param {Number} f2
+<span class='line'>589</span>      */</span><span class="WHIT">
+<span class='line'>590</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith2f</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f2</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>591</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">floats</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="NAME">f1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f2</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>592</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floats</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>593</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">updated</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>594</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform2f</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f2</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>595</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>596</span> 
+<span class='line'>597</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>598</span>      * calls glUniform3f only if the values are different than the previous call for this same shader program.
+<span class='line'>599</span>      * @param {WebGLUniformLocation} location
+<span class='line'>600</span>      * @param {Number} f1
+<span class='line'>601</span>      * @param {Number} f2
+<span class='line'>602</span>      * @param {Number} f3
+<span class='line'>603</span>      */</span><span class="WHIT">
+<span class='line'>604</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith3f</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f3</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>605</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">floats</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="NAME">f1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f3</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>606</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floats</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>607</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">updated</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>608</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform3f</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f3</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>609</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>610</span> 
+<span class='line'>611</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>612</span>      * calls glUniform4f only if the values are different than the previous call for this same shader program.
+<span class='line'>613</span>      * @param {WebGLUniformLocation} location
+<span class='line'>614</span>      * @param {Number} f1
+<span class='line'>615</span>      * @param {Number} f2
+<span class='line'>616</span>      * @param {Number} f3
+<span class='line'>617</span>      * @param {Number} f4
+<span class='line'>618</span>      */</span><span class="WHIT">
+<span class='line'>619</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith4f</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f3</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f4</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>620</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">floats</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="NAME">f1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f3</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f4</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>621</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floats</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>622</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">updated</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>623</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform4f</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f3</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f4</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>624</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>625</span> 
+<span class='line'>626</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>627</span>      * calls glUniform2fv only if the values are different than the previous call for this same shader program.
+<span class='line'>628</span>      * @param {WebGLUniformLocation} location
+<span class='line'>629</span>      * @param {Float32Array} floatArray
+<span class='line'>630</span>      * @param {Number} numberOfArrays
+<span class='line'>631</span>      */</span><span class="WHIT">
+<span class='line'>632</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith2fv</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floatArray</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">numberOfArrays</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>633</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floatArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>634</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">updated</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>635</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform2fv</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floatArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>636</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>637</span> 
+<span class='line'>638</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>639</span>      * calls glUniform3fv only if the values are different than the previous call for this same shader program.
+<span class='line'>640</span>      * @param {WebGLUniformLocation} location
+<span class='line'>641</span>      * @param {Float32Array} floatArray
+<span class='line'>642</span>      * @param {Number} numberOfArrays
+<span class='line'>643</span>      */</span><span class="WHIT">
+<span class='line'>644</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith3fv</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floatArray</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">numberOfArrays</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>645</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floatArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>646</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">updated</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>647</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform3fv</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floatArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>648</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>649</span> 
+<span class='line'>650</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>651</span>      * calls glUniform4fv only if the values are different than the previous call for this same shader program.
+<span class='line'>652</span>      * @param {WebGLUniformLocation} location
+<span class='line'>653</span>      * @param {Float32Array} floatArray
+<span class='line'>654</span>      * @param {Number} numberOfArrays
+<span class='line'>655</span>      */</span><span class="WHIT">
+<span class='line'>656</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWith4fv</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floatArray</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">numberOfArrays</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>657</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floatArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>658</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">updated</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>659</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniform4fv</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">floatArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>660</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>661</span> 
+<span class='line'>662</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>663</span>      * calls glUniformMatrix4fv only if the values are different than the previous call for this same shader program.
+<span class='line'>664</span>      * @param {WebGLUniformLocation} location
+<span class='line'>665</span>      * @param {Float32Array} matrixArray
+<span class='line'>666</span>      * @param {Number} numberOfMatrices
+<span class='line'>667</span>      */</span><span class="WHIT">
+<span class='line'>668</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationWithMatrix4fv</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">matrixArray</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">numberOfMatrices</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>669</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">updated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._updateUniformLocation</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">matrixArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>670</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">updated</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>671</span> </span><span class="WHIT">            </span><span class="NAME">this._glContext.uniformMatrix4fv</span><span class="PUNC">(</span><span class="NAME">location</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">matrixArray</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>672</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>673</span> 
+<span class='line'>674</span> </span><span class="WHIT">    </span><span class="NAME">setUniformLocationF32</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>675</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">arguments.length</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>676</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>677</span> 
+<span class='line'>678</span> </span><span class="WHIT">        </span><span class="KEYW">switch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">arguments.length</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>679</span> </span><span class="WHIT">            </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="PUNC">:</span><span class="WHIT">
+<span class='line'>680</span> </span><span class="WHIT">                </span><span class="NAME">this.setUniformLocationWith1f</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>681</span> </span><span class="WHIT">                </span><span class="KEYW">break</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>682</span> </span><span class="WHIT">            </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="NUMB">3</span><span class="PUNC">:</span><span class="WHIT">
+<span class='line'>683</span> </span><span class="WHIT">                </span><span class="NAME">this.setUniformLocationWith2f</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">2</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>684</span> </span><span class="WHIT">                </span><span class="KEYW">break</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>685</span> </span><span class="WHIT">            </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="NUMB">4</span><span class="PUNC">:</span><span class="WHIT">
+<span class='line'>686</span> </span><span class="WHIT">                </span><span class="NAME">this.setUniformLocationWith3f</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">2</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">3</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>687</span> </span><span class="WHIT">                </span><span class="KEYW">break</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>688</span> </span><span class="WHIT">            </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="NUMB">5</span><span class="PUNC">:</span><span class="WHIT">
+<span class='line'>689</span> </span><span class="WHIT">                </span><span class="NAME">this.setUniformLocationWith4f</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">2</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">3</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">[</span><span class="NUMB">4</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>690</span> </span><span class="WHIT">                </span><span class="KEYW">break</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>691</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>692</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>693</span> 
+<span class='line'>694</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>695</span>      * will update the builtin uniforms if they are different than the previous call for this same shader program.
+<span class='line'>696</span>      */</span><span class="WHIT">
+<span class='line'>697</span> </span><span class="WHIT">    </span><span class="NAME">setUniformsForBuiltins</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>698</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">matrixP</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">cc.kmMat4</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>699</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">matrixMV</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">cc.kmMat4</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>700</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">matrixMVP</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">cc.kmMat4</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>701</span> 
+<span class='line'>702</span> </span><span class="WHIT">        </span><span class="NAME">cc.kmGLGetMatrix</span><span class="PUNC">(</span><span class="NAME">cc.KM_GL_PROJECTION</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">matrixP</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>703</span> </span><span class="WHIT">        </span><span class="NAME">cc.kmGLGetMatrix</span><span class="PUNC">(</span><span class="NAME">cc.KM_GL_MODELVIEW</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">matrixMV</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>704</span> 
+<span class='line'>705</span> </span><span class="WHIT">        </span><span class="NAME">cc.kmMat4Multiply</span><span class="PUNC">(</span><span class="NAME">matrixMVP</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">matrixP</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">matrixMV</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>706</span> 
+<span class='line'>707</span> </span><span class="WHIT">        </span><span class="NAME">this.setUniformLocationWithMatrix4fv</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_PMATRIX</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">matrixP.mat</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>708</span> </span><span class="WHIT">        </span><span class="NAME">this.setUniformLocationWithMatrix4fv</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_MVMATRIX</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">matrixMV.mat</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>709</span> </span><span class="WHIT">        </span><span class="NAME">this.setUniformLocationWithMatrix4fv</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_MVPMATRIX</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">matrixMVP.mat</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>710</span> 
+<span class='line'>711</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._usesTime</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>712</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">director</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cc.Director.getInstance</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>713</span> </span><span class="WHIT">            </span><span class="COMM">// This doesn't give the most accurate global time value.</span><span class="WHIT">
+<span class='line'>714</span> </span><span class="WHIT">            </span><span class="COMM">// Cocos2D doesn't store a high precision time value, so this will have to do.</span><span class="WHIT">
+<span class='line'>715</span> </span><span class="WHIT">            </span><span class="COMM">// Getting Mach time per frame per shader using time could be extremely expensive.</span><span class="WHIT">
+<span class='line'>716</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">director.getTotalFrames</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">director.getAnimationInterval</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>717</span> 
+<span class='line'>718</span> </span><span class="WHIT">            </span><span class="NAME">this.setUniformLocationWith4f</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_TIME</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">10.0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NUMB">4</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>719</span> </span><span class="WHIT">            </span><span class="NAME">this.setUniformLocationWith4f</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_SINTIME</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">8.0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">4.0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">2.0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Math.sin</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>720</span> </span><span class="WHIT">            </span><span class="NAME">this.setUniformLocationWith4f</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_COSTIME</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">8.0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">4.0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">2.0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Math.cos</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>721</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>722</span> 
+<span class='line'>723</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_RANDOM01</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>724</span> </span><span class="WHIT">            </span><span class="NAME">this.setUniformLocationWith4f</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_RANDOM01</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Math.random</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Math.random</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Math.random</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Math.random</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>725</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>726</span> 
+<span class='line'>727</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>728</span>      * will update the MVP matrix on the MVP uniform if it is different than the previous call for this same shader program.
+<span class='line'>729</span>      */</span><span class="WHIT">
+<span class='line'>730</span> </span><span class="WHIT">    </span><span class="NAME">setUniformForModelViewProjectionMatrix</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>731</span> </span><span class="WHIT">        </span><span class="NAME">this._glContext.uniformMatrix4fv</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_MVPMATRIX</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>732</span> </span><span class="WHIT">            </span><span class="NAME">cc.getMat4MultiplyValue</span><span class="PUNC">(</span><span class="NAME">cc.projection_matrix_stack.top</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.modelview_matrix_stack.top</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>733</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>734</span> 
+<span class='line'>735</span> </span><span class="WHIT">    </span><span class="NAME">setUniformForModelViewProjectionMatrixWithMat4</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">swapMat4</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>736</span> </span><span class="WHIT">        </span><span class="NAME">cc.kmMat4Multiply</span><span class="PUNC">(</span><span class="NAME">swapMat4</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.projection_matrix_stack.top</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.modelview_matrix_stack.top</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>737</span> </span><span class="WHIT">        </span><span class="NAME">this._glContext.uniformMatrix4fv</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_MVPMATRIX</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">swapMat4.mat</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>738</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>739</span> 
+<span class='line'>740</span> </span><span class="WHIT">    </span><span class="NAME">setUniformForModelViewAndProjectionMatrixWithMat4</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>741</span> </span><span class="WHIT">        </span><span class="NAME">this._glContext.uniformMatrix4fv</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_MVMATRIX</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.modelview_matrix_stack.top.mat</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>742</span> </span><span class="WHIT">        </span><span class="NAME">this._glContext.uniformMatrix4fv</span><span class="PUNC">(</span><span class="NAME">this._uniforms</span><span class="PUNC">[</span><span class="NAME">cc.UNIFORM_PMATRIX</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cc.projection_matrix_stack.top.mat</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>743</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>744</span> 
+<span class='line'>745</span> 
+<span class='line'>746</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>747</span>      * returns the vertexShader error log
+<span class='line'>748</span>      * @return {String}
+<span class='line'>749</span>      */</span><span class="WHIT">
+<span class='line'>750</span> </span><span class="WHIT">    </span><span class="NAME">vertexShaderLog</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>751</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._glContext.getShaderInfoLog</span><span class="PUNC">(</span><span class="NAME">this._vertShader</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>752</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>753</span> 
+<span class='line'>754</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>755</span>      * returns the vertexShader error log
+<span class='line'>756</span>      * @return {String}
+<span class='line'>757</span>      */</span><span class="WHIT">
+<span class='line'>758</span> </span><span class="WHIT">    </span><span class="NAME">getVertexShaderLog</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>759</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._glContext.getShaderInfoLog</span><span class="PUNC">(</span><span class="NAME">this._vertShader</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>760</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>761</span> 
+<span class='line'>762</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>763</span>      * returns the fragmentShader error log
+<span class='line'>764</span>      * @returns {String}
+<span class='line'>765</span>      */</span><span class="WHIT">
+<span class='line'>766</span> </span><span class="WHIT">    </span><span class="NAME">getFragmentShaderLog</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>767</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._glContext.getShaderInfoLog</span><span class="PUNC">(</span><span class="NAME">this._vertShader</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>768</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>769</span> 
+<span class='line'>770</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>771</span>      * returns the fragmentShader error log
+<span class='line'>772</span>      * @return {String}
+<span class='line'>773</span>      */</span><span class="WHIT">
+<span class='line'>774</span> </span><span class="WHIT">    </span><span class="NAME">fragmentShaderLog</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>775</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._glContext.getShaderInfoLog</span><span class="PUNC">(</span><span class="NAME">this._fragShader</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>776</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>777</span> 
+<span class='line'>778</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>779</span>      * returns the program error log
+<span class='line'>780</span>      * @return {String}
+<span class='line'>781</span>      */</span><span class="WHIT">
+<span class='line'>782</span> </span><span class="WHIT">    </span><span class="NAME">programLog</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>783</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._glContext.getProgramInfoLog</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>784</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>785</span> 
+<span class='line'>786</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>787</span>      * returns the program error log
+<span class='line'>788</span>      * @return {String}
+<span class='line'>789</span>      */</span><span class="WHIT">
+<span class='line'>790</span> </span><span class="WHIT">    </span><span class="NAME">getProgramLog</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>791</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._glContext.getProgramInfoLog</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>792</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>793</span> 
+<span class='line'>794</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>795</span>      *  reload all shaders, this function is designed for android  &lt;br/>
+<span class='line'>796</span>      *  when opengl context lost, so don't call it.
+<span class='line'>797</span>      */</span><span class="WHIT">
+<span class='line'>798</span> </span><span class="WHIT">    </span><span class="NAME">reset</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>799</span> </span><span class="WHIT">        </span><span class="NAME">this._vertShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>800</span> </span><span class="WHIT">        </span><span class="NAME">this._fragShader</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>801</span> </span><span class="WHIT">        </span><span class="NAME">this._uniforms</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>802</span> 
+<span class='line'>803</span> </span><span class="WHIT">        </span><span class="COMM">// it is already deallocated by android</span><span class="WHIT">
+<span class='line'>804</span> </span><span class="WHIT">        </span><span class="COMM">//ccGLDeleteProgram(m_uProgram);</span><span class="WHIT">
+<span class='line'>805</span> </span><span class="WHIT">        </span><span class="NAME">this._glContext.deleteProgram</span><span class="PUNC">(</span><span class="NAME">this._programObj</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>806</span> </span><span class="WHIT">        </span><span class="NAME">this._programObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>807</span> 
+<span class='line'>808</span> </span><span class="WHIT">        </span><span class="COMM">// Purge uniform hash</span><span class="WHIT">
+<span class='line'>809</span> </span><span class="WHIT">        </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">this._hashForUniforms.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>810</span> </span><span class="WHIT">            </span><span class="NAME">this._hashForUniforms</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>811</span> </span><span class="WHIT">            </span><span class="NAME">this._hashForUniforms</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>812</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>813</span> 
+<span class='line'>814</span> </span><span class="WHIT">        </span><span class="NAME">this._hashForUniforms</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>815</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>816</span> 
+<span class='line'>817</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>818</span>      * get WebGLProgram object
+<span class='line'>819</span>      * @return {WebGLProgram}
+<span class='line'>820</span>      */</span><span class="WHIT">
+<span class='line'>821</span> </span><span class="WHIT">    </span><span class="NAME">getProgram</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>822</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this._programObj</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>823</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>824</span> 
+<span class='line'>825</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>826</span>      * Currently JavaScript Bindigns (JSB), in some cases, needs to use retain and release. This is a bug in JSB,
+<span class='line'>827</span>      * and the ugly workaround is to use retain/release. So, these 2 methods were added to be compatible with JSB.
+<span class='line'>828</span>      * This is a hack, and should be removed once JSB fixes the retain/release bug
+<span class='line'>829</span>      */</span><span class="WHIT">
+<span class='line'>830</span> </span><span class="WHIT">    </span><span class="NAME">retain</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>831</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>832</span> </span><span class="WHIT">    </span><span class="NAME">release</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>833</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>834</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>835</span> 
+<span class='line'>836</span> </span><span class="COMM">/**
+<span class='line'>837</span>  * Create a cc.GLProgram object
+<span class='line'>838</span>  * @param {String} vShaderFileName
+<span class='line'>839</span>  * @param {String} fShaderFileName
+<span class='line'>840</span>  * @returns {cc.GLProgram}
+<span class='line'>841</span>  */</span><span class="WHIT">
+<span class='line'>842</span> </span><span class="NAME">cc.GLProgram.create</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">vShaderFileName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fShaderFileName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>843</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">program</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">cc.GLProgram</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>844</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">program.init</span><span class="PUNC">(</span><span class="NAME">vShaderFileName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fShaderFileName</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>845</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">program</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>846</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>847</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>848</span> </span></pre></body></html>

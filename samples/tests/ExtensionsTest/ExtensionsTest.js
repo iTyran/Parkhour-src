@@ -81,15 +81,6 @@ var extensionsTestItemNames = [
         testScene:function () {
             runWebSocketTest();
         }
-    },
-    {
-        itemTitle:"CocoStudioArmatureTest",
-        testScene:function () {
-            var pScene = new ArmatureTestScene();
-            if (pScene) {
-                pScene.runThisTest();
-            }
-        }
     }
 ];
 

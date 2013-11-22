@@ -1,0 +1,11 @@
+{! Link.base = ""; /* all generated links will be relative to this */ !}
+{+subtemplate("subtemplates/head.tmpl", {subtitle: "Class Index"})+}
+{+subtemplate("subtemplates/menu.tmpl")+}
+        <div class="fullscreen">
+        <div class="iframe">
+            <iframe src='files.html' frameborder="0" name="rightFrame" id="rightFrame"></iframe>
+        </div></div>
+{+subtemplate("subtemplates/foot.tmpl")+}
+<script>
+    document.body.style.overflow="hidden";
+</script>

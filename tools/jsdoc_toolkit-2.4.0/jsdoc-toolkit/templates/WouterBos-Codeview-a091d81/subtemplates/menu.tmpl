@@ -1,0 +1,53 @@
+<div class="index" style="z-index: 10">
+	<div class="menu">
+		<div class="indexLinks" style="margin-top: 72px">
+            <a href="index.html">Home</a>
+            <a href="files.html" target="rightFrame">Files</a>
+		</div>
+		<img style="margin-bottom: 20px" src="{+Link.base+}css/cocos2d-html5.png"/>
+		
+		<input type="text" name="classFilter" class="classFilter" id="ClassFilter" placeholder="Filter"></input>
+		
+		<nav>
+			<ul class="classList" id="ClassList">
+				<for each="thisClass" in="publish.classes">
+					{!
+						var classLink = new Link().toClass(thisClass.alias) + "";
+                        var ttttttttttt = ' target="rightFrame"';
+                        var iiiiiiiiiii = classLink.indexOf('">');
+                        var sssssssssss = classLink.substr(0,iiiiiiiiiii+1) + ttttttttttt + classLink.substr(iiiiiiiiiii+1);
+
+
+						output += '<li style="line-height: 24px" ';
+                        if(thisClass.augments[0])
+                        {
+                            output += ' extends="'+thisClass.augments[0]+'"'
+                        }
+                        output += ' self="'+thisClass.alias+'">'+sssssssssss+'</li>';
+					!}
+
+				</for>
+			</ul>
+		</nav>
+	</div>
+	<div class="fineprint" style="clear:both">
+		<footer>
+			<h1>Cocos2d-html5 v2.2</h1>
+			Generated on:
+			{!
+				var date = new Date();
+				var minutes = date.getMinutes() +"";
+				if (minutes.length == 1) {
+					minutes = '0'+ minutes;
+				}
+				var timeHuman = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + minutes;
+				var timeData = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate();
+				output += "<time datetime='"+ timeData +"' pubdate>" + timeHuman +"</time>";
+			!}<br/>
+            Template based on: <a href="{+publish.conf.templateLink+}" target="_blank">{+publish.conf.templateName+}</a> {+publish.conf.templateVersion+}<br />
+            &copy; 2012 Cocos2d-x.org
+        </footer>
+	</div>
+</div>
+
+<div class="index indexStatic"></div>
