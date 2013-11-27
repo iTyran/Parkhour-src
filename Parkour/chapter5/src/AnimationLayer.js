@@ -11,8 +11,6 @@ var AnimationLayer = cc.Layer.extend({
     init:function () {
         this._super();
 
-        var centerPos = cc.p(80, 85);
-
         // create sprite sheet
         cc.SpriteFrameCache.getInstance().addSpriteFrames(s_runnerplist);
         this.spriteSheet = cc.SpriteBatchNode.create(s_runner);
