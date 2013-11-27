@@ -7,8 +7,10 @@ var BackgroundLayer = cc.Layer.extend({
     init:function () {
         this._super();
 
-        var map00 = cc.TMXTiledMap.create(s_map00);
-        this.addChild(map00);
+        var centerPos = cc.p(winSize.width / 2, winSize.height / 2);
+        var spriteBG = cc.Sprite.create(s_PlayBG);
+        spriteBG.setPosition(centerPos);
+        this.addChild(spriteBG);
     }
 });
 
