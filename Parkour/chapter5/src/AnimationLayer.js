@@ -30,6 +30,7 @@ var AnimationLayer = cc.Layer.extend({
         this.runningAction = cc.RepeatForever.create(cc.Animate.create(animation));
 
         this.sprite = cc.Sprite.createWithSpriteFrameName("runner0.png");
+        this.sprite.setPosition(cc.p(80, 85));
         this.sprite.runAction(this.runningAction);
         this.spriteSheet.addChild(this.sprite);
     }

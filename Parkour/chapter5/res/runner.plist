@@ -114,13 +114,13 @@
             <key>format</key>
             <integer>2</integer>
             <key>realTextureFileName</key>
-            <string>runner.pvr.ccz</string>
+            <string>runner.png</string>
             <key>size</key>
             <string>{128,256}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:0e282e6c212177a4d7fea288a0153468:8b0ba647c40ecc0e01c1545769030b07:0b07f6c314d8161f58352964929aa74f$</string>
+            <string>$TexturePacker:SmartUpdate:257f5a39a09ff8e4050bc29d05b388a4:8b0ba647c40ecc0e01c1545769030b07:40baca46467203badeafdde32c8bb385$</string>
             <key>textureFileName</key>
-            <string>runner.pvr.ccz</string>
+            <string>runner.png</string>
         </dict>
     </dict>
 </plist>
