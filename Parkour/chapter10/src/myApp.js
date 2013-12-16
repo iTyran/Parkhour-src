@@ -1,0 +1,49 @@
+var HelloLayer = cc.Layer.extend({
+    ctor:function () {
+        this._super();
+        this.init();
+    },
+
+    init:function () {
+        this._super();
+
+        director = cc.Director.getInstance();
+        winSize = director.getWinSize();
+        var centerPos = cc.p(winSize.width / 2, winSize.height / 2);
+
+        var spriteBG = cc.Sprite.create(s_HelloBG);
+        spriteBG.setPosition(centerPos);
+        this.addChild(spriteBG);
+
+        cc.MenuItemFont.setFontSize(60);
+        var menuItemPlay = cc.MenuItemSprite.create(
+            cc.Sprite.create(s_start_n),
+            cc.Sprite.create(s_start_s),
+            this.onPlay, this);
+        var menu = cc.Menu.create(menuItemPlay);
+        menu.setPosition(centerPos);
+        this.addChild(menu);
+
+        // preload music
+        audioEngine = cc.AudioEngine.getInstance();
+        audioEngine.preloadMusic(s_music_background);
+        audioEngine.preloadEffect(s_music_jump);
+        audioEngine.preloadEffect(s_music_pickup_coin);
+    },
+
+    // on play button clicked
+    onPlay:function (sender) {
+        cc.log("==onPlay clicked");
+        var director = cc.Director.getInstance();
+        director.replaceScene(new PlayScene());
+    }
+});
+
+var HelloWorldScene = cc.Scene.extend({
+    onEnter:function () {
+        this._super();
+        var layer = new HelloLayer();
+        this.addChild(layer);
+    }
+});
+
